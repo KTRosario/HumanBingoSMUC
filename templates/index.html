@@ -13,6 +13,7 @@
   </div>
 
   <div id="board" class="hidden">
+    <p class="instructions">Click on each box and enter the name of your classmates that matches the prompt. Once you complete all prompts, shout “Bingo!”</p>
     <div id="grid" class="grid"></div>
     <div id="doneBanner" class="hidden notice success">
       Card complete — great job!
@@ -55,6 +56,7 @@
       const b = document.createElement("button");
       b.className = "cell";
       b.textContent = pr.text;
+      b.title = pr.text; // tooltip on long prompts
       b.onclick = () => {
         let partner = prompt('Who did you meet for:\n\n' + pr.text + '\n\nEnter their name:');
         if (partner === null) return; // cancelled
