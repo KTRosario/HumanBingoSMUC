@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ player['name'] }} · {{ game_name }} — Details{% endblock %}
+{% block content %}
+<section class="card">
+  <a href="/admin/{{ game_id }}">&larr; Back to Admin {{ game_id }}</a>
+  <h2>Student: {{ player['name'] }}</h2>
+  <p>Game: <strong>{{ game_name }}</strong> ({{ game_id }})</p>
+  <table style="width:100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th style="text-align:left; border-bottom:1px solid #334155; padding:.5rem;">Prompt</th>
+        <th style="text-align:left; border-bottom:1px solid #334155; padding:.5rem;">Entered Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td style="padding:.5rem; border-bottom:1px solid #1f2937;">{{ r['prompt'] }}</td>
+        <td style="padding:.5rem; border-bottom:1px solid #1f2937;">{{ r['partner'] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

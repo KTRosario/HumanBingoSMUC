@@ -16,3 +16,22 @@ button:hover{filter:brightness(1.05)}
 .admin-grid{display:grid;grid-template-columns:1fr;gap:16px}
 @media(min-width:900px){.admin-grid{grid-template-columns:1fr 1fr}}
 code{background:#0b1220;padding:2px 6px;border-radius:8px;border:1px solid #334155}
+
+/* --- Visibility patch: inputs & placeholders --- */
+input, textarea {
+  color: #e5eefc;
+  caret-color: #e5eefc;
+}
+input::placeholder, textarea::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}
+input:focus, textarea:focus {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+}
+input:-webkit-autofill, textarea:-webkit-autofill {
+  -webkit-text-fill-color: #e5eefc;
+  box-shadow: 0 0 0 1000px #0b1220 inset;
+  transition: background-color 9999s ease-in-out 0s;
+}

@@ -14,6 +14,9 @@
 
   <div id="board" class="hidden">
     <div id="grid" class="grid"></div>
+    <div id="doneBanner" class="hidden" style="margin:.75rem 0; padding:.75rem; border-radius:10px; background:#065f46; color:#ecfdf5; font-weight:600;">
+      Card complete — great job!
+    </div>
     <h3>Leaderboard</h3>
     <ol id="lb"></ol>
   </div>
@@ -27,6 +30,13 @@
   if (qp.get("game")) $("#game").value = qp.get("game").toUpperCase();
 
   let sio, gameId, playerId, prompts = [];
+
+  function checkComplete(){
+    const done = document.querySelectorAll('.cell.done').length;
+    if (done >= prompts.length){
+      document.getElementById('doneBanner').classList.remove('hidden');
+    }
+  }
 
   $("#joinBtn").onclick = async () => {
     gameId = $("#game").value.trim().toUpperCase();
@@ -46,8 +56,13 @@
       b.className = "cell";
       b.textContent = pr.text;
       b.onclick = () => {
-        sio.emit("mark_square", {game_id: gameId, player_id: playerId, prompt_id: pr.id});
+        let partner = prompt('Who did you meet for:\n\n' + pr.text + '\n\nEnter their name:');
+        if (partner === null) return; // cancelled
+        partner = partner.trim();
+        if (!partner){ alert('Please enter a name.'); return; }
+        sio.emit("mark_square", {game_id: gameId, player_id: playerId, prompt_id: pr.id, partner_name: partner});
         b.classList.add("done"); b.disabled = true;
+        checkComplete();
       };
       grid.appendChild(b);
     });
@@ -61,6 +76,7 @@
         li.textContent = `${row.name} — ${row.score}`;
         lb.appendChild(li);
       });
+      checkComplete();
     });
 
     $("#join").classList.add("hidden");
