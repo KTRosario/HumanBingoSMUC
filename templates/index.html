@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Join Human Bingo{% endblock %}
+{% block content %}
+<section class="card">
+  <h2>Human Bingo</h2>
+  <div id="join">
+    <label>Game Code</label>
+    <input id="game" placeholder="e.g., 7F2A1B">
+    <label>Your Name</label>
+    <input id="name" placeholder="e.g., Ana">
+    <button id="joinBtn">Join</button>
+    <p class="hint">Tip: If you scanned a QR, the code may already be filled.</p>
+  </div>
+
+  <div id="board" class="hidden">
+    <div id="grid" class="grid"></div>
+    <h3>Leaderboard</h3>
+    <ol id="lb"></ol>
+  </div>
+</section>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const qp = new URLSearchParams(window.location.search);
+  if (qp.get("game")) $("#game").value = qp.get("game").toUpperCase();
+
+  let sio, gameId, playerId, prompts = [];
+
+  $("#joinBtn").onclick = async () => {
+    gameId = $("#game").value.trim().toUpperCase();
+    const name = $("#name").value.trim();
+    if (!gameId || !name) { alert("Enter game code and name"); return; }
+
+    const r = await fetch("/join", {method:"POST", headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({game_id: gameId, name})});
+    const j = await r.json();
+    if (j.error){ alert(j.error); return; }
+    playerId = j.player_id;
+
+    const p = await (await fetch("/board/"+gameId)).json(); prompts = p;
+    const grid = $("#grid"); grid.innerHTML = "";
+    prompts.forEach(pr => {
+      const b = document.createElement("button");
+      b.className = "cell";
+      b.textContent = pr.text;
+      b.onclick = () => {
+        sio.emit("mark_square", {game_id: gameId, player_id: playerId, prompt_id: pr.id});
+        b.classList.add("done"); b.disabled = true;
+      };
+      grid.appendChild(b);
+    });
+
+    sio = io();
+    sio.emit("join", {game_id: gameId});
+    sio.on("leaderboard", (msg) => {
+      const lb = $("#lb"); lb.innerHTML = "";
+      msg.leaderboard.forEach(row => {
+        const li = document.createElement("li");
+        li.textContent = `${row.name} — ${row.score}`;
+        lb.appendChild(li);
+      });
+    });
+
+    $("#join").classList.add("hidden");
+    $("#board").classList.remove("hidden");
+  };
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Admin · Human Bingo{% endblock %}
+{% block content %}
+<section class="card">
+  <h2>Admin · Human Bingo</h2>
+
+  {% if not game_id %}
+  <form method="post" action="/admin/create" class="admin-form">
+    <label>Game Name</label>
+    <input name="name" placeholder="Intro CS+AI Bingo" required>
+    <label>Prompts (one per line)</label>
+    <textarea name="prompts" rows="12" placeholder="Has coded in Python
+Speaks 3+ languages
+From outside Spain
+Has tried ChatGPT
+Plays an instrument
+Prefers tea over coffee
+Knows what TensorFlow is
+Loves board games
+Has a pet
+Can say hello in 4+ languages
+Watches anime
+Into football
+Uses Linux daily
+Has traveled to 5+ countries
+Early riser
+Night owl
+Reads sci-fi
+Enjoys hiking
+Has built a robot
+Knows Git basics
+Into photography
+Can juggle
+Plays chess
+Has a twin
+Can whistle loudly"></textarea>
+    <button type="submit">Create Game</button>
+  </form>
+  {% else %}
+    <div class="admin-grid">
+      <div>
+        <h3>Game: {{ game_name }} ({{ game_id }})</h3>
+        <p>Student join URL (show on projector): <code>{{ request.host_url.rstrip('/') }}?game={{ game_id }}</code></p>
+        <img src="/qr/{{ game_id }}" alt="QR code" style="max-width:200px; background:#fff; padding:8px;">
+        <h4>Prompts ({{ prompts|length }})</h4>
+        <ul>
+          {% for p in prompts %}<li>{{ p['text'] }}</li>{% endfor %}
+        </ul>
+      </div>
+      <div>
+        <h3>Live Leaderboard (Top 10)</h3>
+        <p>Open the student page and join the game to see updates here.</p>
+        <iframe src="/?game={{ game_id }}" style="width:100%; height:420px; border:1px solid #ccc; border-radius:12px;"></iframe>
+      </div>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
