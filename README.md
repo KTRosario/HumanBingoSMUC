@@ -1,11 +1,9 @@
-# Human Bingo — v2
+# Human Bingo — v3
 
-Changes in this version:
-- Students must enter a **classmate's name** for each prompt.
-- Stored per-square `partner_name` in DB; tiny migration included.
-- Admin: **click a player** to see per-prompt entered names.
-- Input visibility improvements in CSS.
-- Render-friendly: `runtime.txt` pins Python 3.11.9.
+What's new:
+1) **Readable student screen** — bingo cells now use light text on dark background.
+2) **End Game button** — on admin page; purges all game data and returns to setup.
+3) **Read-only preview** — admin page iframe now shows `/preview/<GAME_ID>` which renders the prompts grid and a live leaderboard without requiring a student to join.
 
 ## Local run
 ```

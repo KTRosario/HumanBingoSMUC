@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Preview · {{ game_name }}{% endblock %}
+{% block content %}
+<section class="card">
+  <h2>Preview — {{ game_name }} ({{ game_id }})</h2>
+  <div class="grid" id="previewGrid"></div>
+  <h3>Live Leaderboard</h3>
+  <ol id="lb"></ol>
+</section>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+(async function(){
+  const gameId = "{{ game_id }}";
+  const grid = document.getElementById('previewGrid');
+  const lb = document.getElementById('lb');
+
+  const prompts = await (await fetch("/board/"+gameId)).json();
+  prompts.forEach(pr => {
+    const d = document.createElement('div');
+    d.className = 'cell preview';
+    d.textContent = pr.text;
+    grid.appendChild(d);
+  });
+
+  function renderLB(rows){
+    lb.innerHTML = "";
+    rows.forEach(r => {
+      const li = document.createElement('li');
+      li.textContent = `${r.name} — ${r.score}`;
+      lb.appendChild(li);
+    });
+  }
+
+  const initial = await (await fetch("/api/leaderboard/"+gameId)).json();
+  renderLB(initial);
+
+  const sio = io();
+  sio.emit("join", {game_id: gameId});
+  sio.on("leaderboard", (msg) => renderLB(msg.leaderboard));
+})();
+</script>
+{% endblock %}

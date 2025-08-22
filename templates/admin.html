@@ -42,6 +42,11 @@ Can whistle loudly"></textarea>
         <h3>Game: {{ game_name }} ({{ game_id }})</h3>
         <p>Student join URL (show on projector): <code>{{ request.host_url.rstrip('/') }}?game={{ game_id }}</code></p>
         <img src="/qr/{{ game_id }}" alt="QR code" style="max-width:200px; background:#fff; padding:8px;">
+
+        <form method="post" action="/admin/{{ game_id }}/end" onsubmit="return confirm('End this game? This deletes all players and marks and returns you to setup. This cannot be undone.');" style="margin:12px 0;">
+          <button type="submit" class="danger">End Game</button>
+        </form>
+
         <h4>Prompts ({{ prompts|length }})</h4>
         <ul>
           {% for p in prompts %}<li>{{ p['text'] }}</li>{% endfor %}
@@ -59,8 +64,8 @@ Can whistle loudly"></textarea>
         {% endif %}
       </div>
       <div>
-        <h3>Live Leaderboard (Student View)</h3>
-        <iframe src="/?game={{ game_id }}" style="width:100%; height:480px; border:1px solid #334155; border-radius:12px;"></iframe>
+        <h3>Read‑only Preview (questions + live leaderboard)</h3>
+        <iframe src="/preview/{{ game_id }}" style="width:100%; height:520px; border:1px solid #334155; border-radius:12px;"></iframe>
       </div>
     </div>
   {% endif %}
